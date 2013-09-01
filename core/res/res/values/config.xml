@@ -2269,5 +2269,4 @@
          Array of "code#,retry#"  -->
     <string-array name="config_cell_retries_per_error_code">
     </string-array>
-
 </resources>
