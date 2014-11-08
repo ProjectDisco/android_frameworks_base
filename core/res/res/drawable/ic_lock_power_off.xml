@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2014 The Android Open Source Project
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
 
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-          http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
-
-<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-    android:src="@drawable/ic_lock_power_off_alpha"
-    android:tint="?attr/colorControlNormal" />
+    <path
+        android:fillColor="#8A000000"
+        android:pathData="M14.662,3.9977v13.235h2.647v-13.235h-2.6468zm-4.7151,3.2261c-2.7464,1.9124-4.5496,5.0862-4.5496,8.6852,0,5.8499,4.7381,10.588,10.588,10.588s10.588-4.7381,10.588-10.588c0-3.5999-1.8033-6.7731-4.5496-8.6856l-1.9026,1.9026c2.283,1.3963,3.8051,3.911,3.8051,6.783,0,4.3874-3.5536,7.9409-7.9409,7.9409-4.3874,0-7.9409-3.5536-7.9409-7.9409,0-2.872,1.522-5.3867,3.8051-6.783l-1.9014-1.9024z" />
+</vector>
