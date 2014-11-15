@@ -2080,4 +2080,7 @@
   <java-symbol name="ic_lock_power_reboot" type="drawable" />
   <java-symbol name="global_action_reboot" type="string" />
 
+  <!-- Power menu reboot recovery -->
+  <java-symbol name="global_action_rebootrecovery" type="string" />
+
 </resources>
