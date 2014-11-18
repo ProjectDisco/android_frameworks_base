@@ -206,4 +206,7 @@
     <!-- Default for Settings.Global.GUEST_USER_ENABLED -->
     <bool name="def_guest_user_enabled">true</bool>
 
+    <!-- Status bar show battery percent -->
+    <bool name="def_status_bar_show_battery_percent">false</bool>
+
 </resources>
