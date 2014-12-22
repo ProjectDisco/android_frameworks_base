@@ -170,7 +170,7 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
             String action = intent.getAction();
             if (action.equals(Intent.ACTION_SCREEN_OFF)) {
                 // When the screen turns off, dismiss Recents to Home
-                dismissRecentsToHome(false);
+                dismissRecentsToHomeRaw(false);
             } else if (action.equals(SearchManager.INTENT_GLOBAL_SEARCH_ACTIVITY_CHANGED)) {
                 // When the search activity changes, update the Search widget
                 refreshSearchWidget();
