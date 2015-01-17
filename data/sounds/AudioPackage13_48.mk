@@ -25,13 +25,13 @@ PRODUCT_COPY_FILES += $(foreach fn,$(NOTIFICATION_FILES),\
 PRODUCT_COPY_FILES += $(foreach fn,$(RINGTONE_FILES),\
 	$(LOCAL_PATH)/ringtones/material/ogg/$(fn)_48k.ogg:system/media/audio/ringtones/$(fn).ogg)
 
-PRODUCT_COPY_FILES += $(foreach fn,$(EFFECT_FILES),\
-	$(LOCAL_PATH)/effects/ogg/$(fn)_48k.ogg:system/media/audio/ui/$(fn).ogg)
-PRODUCT_COPY_FILES += $(foreach fn,$(MATERIAL_EFFECT_FILES),\
-	$(LOCAL_PATH)/effects/material/ogg/$(fn)_48k.ogg:system/media/audio/ui/$(fn).ogg)
+#PRODUCT_COPY_FILES += $(foreach fn,$(EFFECT_FILES),\
+#	$(LOCAL_PATH)/effects/ogg/$(fn)_48k.ogg:system/media/audio/ui/$(fn).ogg)
+#PRODUCT_COPY_FILES += $(foreach fn,$(MATERIAL_EFFECT_FILES),\
+#	$(LOCAL_PATH)/effects/material/ogg/$(fn)_48k.ogg:system/media/audio/ui/$(fn).ogg)
 
 # no gold-plated version yet
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/effects/ogg/camera_focus.ogg:system/media/audio/ui/camera_focus.ogg \
-    $(LOCAL_PATH)/effects/ogg/Dock.ogg:system/media/audio/ui/Dock.ogg \
-    $(LOCAL_PATH)/effects/ogg/Undock.ogg:system/media/audio/ui/Undock.ogg
+#PRODUCT_COPY_FILES += \
+  #  $(LOCAL_PATH)/effects/ogg/camera_focus.ogg:system/media/audio/ui/camera_focus.ogg \
+   # $(LOCAL_PATH)/effects/ogg/Dock.ogg:system/media/audio/ui/Dock.ogg \
+   # $(LOCAL_PATH)/effects/ogg/Undock.ogg:system/media/audio/ui/Undock.ogg
