@@ -21,7 +21,8 @@ LOCAL_SHARED_LIBRARIES := \
     libEGL \
     libGLESv1_CM \
     libgui \
-    libtinyalsa
+    libtinyalsa \
+    libmedia
 
 ifeq ($(TARGET_BOOTANIMATION_USE_RGB565),true)
 LOCAL_CFLAGS += -DUSE_565
