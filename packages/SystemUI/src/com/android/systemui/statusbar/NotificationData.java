@@ -271,6 +271,10 @@ public class NotificationData {
         return false;
     }
 
+    public int size() {
+        return mEntries.size();
+    }
+
     // Q: What kinds of notifications should show during setup?
     // A: Almost none! Only things coming from the system (package is "android") that also
     // have special "kind" tags marking them as relevant for setup (see below).
