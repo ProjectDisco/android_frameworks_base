@@ -531,6 +531,8 @@ static jobject nativeDecodeAsset(JNIEnv* env, jobject clazz, jlong native_asset,
     // just use a simple wrapper
     SkAutoTUnref<SkStreamRewindable> stream(new AssetStreamAdaptor(asset,
             AssetStreamAdaptor::kNo_OwnAsset, AssetStreamAdaptor::kNo_HasMemoryBase));
+    //make sure the stream will be at its beginning.
+    stream->rewind();
     return doDecode(env, stream, padding, options);
 }
 
