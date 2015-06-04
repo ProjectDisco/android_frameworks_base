@@ -84,6 +84,8 @@ public final class NavigationBarTransitions extends BarTransitions {
         setKeyButtonViewQuiescentAlpha(mView.getRecentsButton(), alpha, animate);
         setKeyButtonViewQuiescentAlpha(mView.getMenuButton(), alpha, animate);
         setKeyButtonViewQuiescentAlpha(mView.getImeSwitchButton(), alpha, animate);
+        setKeyButtonViewQuiescentAlpha(mView.getLeftImeArrowButton(), alpha, animate);
+        setKeyButtonViewQuiescentAlpha(mView.getRightImeArrowButton(), alpha, animate);
 
         applyBackButtonQuiescentAlpha(mode, animate);
 
