@@ -4,4 +4,9 @@
 
   <java-symbol type="array" name="entries_battery_styles" />
   <java-symbol type="array" name="values_battery_styles" />
+
+  <!-- EdgeGesture service -->
+  <java-symbol type="dimen" name="edge_gesture_trigger_distance" />
+  <java-symbol type="dimen" name="edge_gesture_perpendicular_distance" />
+  <java-symbol type="dimen" name="edge_gesture_trigger_thickness" />
 </resources>
