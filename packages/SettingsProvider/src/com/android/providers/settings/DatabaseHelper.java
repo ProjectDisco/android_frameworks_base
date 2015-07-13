@@ -1895,6 +1895,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             upgradeVersion = 118;
         }
+
+	        if (upgradeVersion < 118) {
+            String[] qsTiles = new String[] {
+                    Settings.Secure.QS_TILES,
+                    Settings.Secure.QS_USE_MAIN_TILES
+            };
+
+            moveSettingsToNewTable(db, TABLE_SYSTEM, TABLE_SECURE,
+                    qsTiles, true);
+            upgradeVersion = 118;
+        }
         // *** Remember to update DATABASE_VERSION above!
 
         if (upgradeVersion != currentVersion) {
