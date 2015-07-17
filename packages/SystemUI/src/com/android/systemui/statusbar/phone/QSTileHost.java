@@ -272,16 +272,6 @@ public class QSTileHost implements QSTile.Host {
                 return new CastTile(this);
             case QSConstants.TILE_HOTSPOT:
                 return new HotspotTile(this);
-            case QSConstants.TILE_NOTIFICATIONS:
-                return new NotificationsTile(this);
-            case QSConstants.TILE_DATA:
-                return new DataTile(this);
-            case QSConstants.TILE_ROAMING:
-                return new RoamingTile(this);
-            case QSConstants.TILE_DDS:
-                return new DdsTile(this);
-            case QSConstants.TILE_APN:
-                return new ApnTile(this);
             default:
                 throw new IllegalArgumentException("Bad tile spec: " + tileSpec);
         }
