@@ -376,6 +376,10 @@ public final class ActivityManagerService extends ActivityManagerNative
     // Delay in notifying task stack change listeners (in millis)
     static final int NOTIFY_TASK_STACK_CHANGE_LISTENERS_DELAY = 1000;
 
+    // Necessary ApplicationInfo flags to mark an app as persistent
+    private static final int PERSISTENT_MASK =
+            ApplicationInfo.FLAG_SYSTEM|ApplicationInfo.FLAG_PERSISTENT;
+
     /** All system services */
     SystemServiceManager mSystemServiceManager;
 
@@ -2691,9 +2695,14 @@ public final class ActivityManagerService extends ActivityManagerNative
             // should never happen).
             SparseArray<ProcessRecord> procs = mProcessNames.getMap().get(processName);
             if (procs == null) return null;
-            final int N = procs.size();
-            for (int i = 0; i < N; i++) {
-                if (UserHandle.isSameUser(procs.keyAt(i), uid)) return procs.valueAt(i);
+            final int procCount = procs.size();
+            for (int i = 0; i < procCount; i++) {
+                final int procUid = procs.keyAt(i);
+                if (UserHandle.isApp(procUid) || !UserHandle.isSameUser(procUid, uid)) {
+                    // Don't use an app process or different user process for system component.
+                    continue;
+                }
+                return procs.valueAt(i);
             }
         }
         ProcessRecord proc = mProcessNames.get(processName, uid);
@@ -8122,7 +8131,7 @@ public final class ActivityManagerService extends ActivityManagerNative
         }
         if (!allowed) {
             Slog.w(TAG, caller + ": caller " + callingUid
-                    + " does not hold GET_TASKS; limiting output");
+                    + " does not hold REAL_GET_TASKS; limiting output");
         }
         return allowed;
     }
@@ -9871,10 +9880,10 @@ public final class ActivityManagerService extends ActivityManagerNative
         String proc = customProcess != null ? customProcess : info.processName;
         BatteryStatsImpl.Uid.Proc ps = null;
         BatteryStatsImpl stats = mBatteryStatsService.getActiveStatistics();
+        final int userId = UserHandle.getUserId(info.uid);
         int uid = info.uid;
         if (isolated) {
             if (isolatedUid == 0) {
-                int userId = UserHandle.getUserId(uid);
                 int stepsLeft = Process.LAST_ISOLATED_UID - Process.FIRST_ISOLATED_UID + 1;
                 while (true) {
                     if (mNextIsolatedProcessUid < Process.FIRST_ISOLATED_UID
@@ -9898,7 +9907,13 @@ public final class ActivityManagerService extends ActivityManagerNative
                 uid = isolatedUid;
             }
         }
-        return new ProcessRecord(stats, info, proc, uid);
+        final ProcessRecord r = new ProcessRecord(stats, info, proc, uid);
+        if (!mBooted && !mBooting
+                && userId == UserHandle.USER_OWNER
+                && (info.flags & PERSISTENT_MASK) == PERSISTENT_MASK) {
+            r.persistent = true;
+        }
+        return r;
     }
 
     final ProcessRecord addAppLocked(ApplicationInfo info, boolean isolated,
@@ -9930,8 +9945,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                     + info.packageName + ": " + e);
         }
 
-        if ((info.flags&(ApplicationInfo.FLAG_SYSTEM|ApplicationInfo.FLAG_PERSISTENT))
-                == (ApplicationInfo.FLAG_SYSTEM|ApplicationInfo.FLAG_PERSISTENT)) {
+        if ((info.flags & PERSISTENT_MASK) == PERSISTENT_MASK) {
             app.persistent = true;
             app.maxAdj = ProcessList.PERSISTENT_PROC_ADJ;
         }
@@ -12241,16 +12255,23 @@ public final class ActivityManagerService extends ActivityManagerNative
 
     public List<ActivityManager.RunningAppProcessInfo> getRunningAppProcesses() {
         enforceNotIsolatedCaller("getRunningAppProcesses");
+
+        final int callingUid = Binder.getCallingUid();
+
         // Lazy instantiation of list
         List<ActivityManager.RunningAppProcessInfo> runList = null;
         final boolean allUsers = ActivityManager.checkUidPermission(INTERACT_ACROSS_USERS_FULL,
-                Binder.getCallingUid()) == PackageManager.PERMISSION_GRANTED;
-        int userId = UserHandle.getUserId(Binder.getCallingUid());
+                callingUid) == PackageManager.PERMISSION_GRANTED;
+        final int userId = UserHandle.getUserId(callingUid);
+        final boolean allUids = isGetTasksAllowed(
+                "getRunningAppProcesses", Binder.getCallingPid(), callingUid);
+
         synchronized (this) {
             // Iterate across all processes
-            for (int i=mLruProcesses.size()-1; i>=0; i--) {
+            for (int i = mLruProcesses.size() - 1; i >= 0; i--) {
                 ProcessRecord app = mLruProcesses.get(i);
-                if (!allUsers && app.userId != userId) {
+                if ((!allUsers && app.userId != userId)
+                        || (!allUids && app.uid != callingUid)) {
                     continue;
                 }
                 if ((app.thread != null) && (!app.crashing && !app.notResponding)) {
@@ -12274,7 +12295,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                     //Slog.v(TAG, "Proc " + app.processName + ": imp=" + currApp.importance
                     //        + " lru=" + currApp.lru);
                     if (runList == null) {
-                        runList = new ArrayList<ActivityManager.RunningAppProcessInfo>();
+                        runList = new ArrayList<>();
                     }
                     runList.add(currApp);
                 }
