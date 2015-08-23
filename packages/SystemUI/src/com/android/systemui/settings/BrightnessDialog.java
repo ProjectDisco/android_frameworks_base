@@ -29,6 +29,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.android.systemui.R;
+import com.android.systemui.settings.AdaptiveBrightnessToggleView;
 
 /** A dialog that provides controls for adjusting the screen brightness. */
 public class BrightnessDialog extends Activity {
@@ -49,7 +50,8 @@ public class BrightnessDialog extends Activity {
 
         final ImageView icon = (ImageView) findViewById(R.id.brightness_icon);
         final ToggleSlider slider = (ToggleSlider) findViewById(R.id.brightness_slider);
-        mBrightnessController = new BrightnessController(this, icon, slider);
+        final AdaptiveBrightnessToggleView theABT = (AdaptiveBrightnessToggleView) findViewById(R.id.qs_adaptive_brightness_toggle);
+        mBrightnessController = new BrightnessController(this, icon, slider, theABT);
     }
 
     @Override

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2012 The Android Open Source Project
+<!-- Copyright (C) 2014 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -15,27 +15,16 @@
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:systemui="http://schemas.android.com/apk/res-auto"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
     style="@style/BrightnessDialogContainer">
 
-    <ImageView
-        android:id="@+id/brightness_icon"
-        android:layout_width="wrap_content"
+    <com.android.systemui.settings.ToggleSlider
+        android:id="@+id/brightness_slider"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginEnd="8dp"
-        android:src="@drawable/ic_qs_brightness_auto_off"
-        android:contentDescription="@null"
-        android:visibility="gone" />
-
-    <com.android.systemui.settings.AdaptiveBrightnessToggleView
-        android:id="@+id/qs_adaptive_brightness_toggle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical" />
-
-    <include
-        layout="@layout/brightness_slider_layout" />
+        android:layout_weight="1"
+        systemui:text="@string/status_bar_settings_auto_brightness_label" />
 
 </LinearLayout>

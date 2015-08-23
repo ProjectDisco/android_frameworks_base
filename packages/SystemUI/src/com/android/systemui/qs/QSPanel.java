@@ -38,6 +38,7 @@ import android.widget.TextView;
 import com.android.systemui.FontSizeUtils;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile.DetailAdapter;
+import com.android.systemui.settings.AdaptiveBrightnessToggleView;
 import com.android.systemui.settings.BrightnessController;
 import com.android.systemui.settings.ToggleSlider;
 import com.android.systemui.statusbar.phone.QSTileHost;
@@ -109,7 +110,8 @@ public class QSPanel extends ViewGroup {
 
         mBrightnessController = new BrightnessController(getContext(),
                 (ImageView) findViewById(R.id.brightness_icon),
-                (ToggleSlider) findViewById(R.id.brightness_slider));
+                (ToggleSlider) findViewById(R.id.brightness_slider),
+                (AdaptiveBrightnessToggleView) findViewById(R.id.qs_adaptive_brightness_toggle));
 
         mDetailDoneButton.setOnClickListener(new OnClickListener() {
             @Override

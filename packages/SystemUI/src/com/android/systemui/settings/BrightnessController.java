@@ -28,7 +28,10 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.UserHandle;
 import android.provider.Settings;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import com.android.systemui.settings.AdaptiveBrightnessToggleView;
 
 import java.util.ArrayList;
 
@@ -48,6 +51,7 @@ public class BrightnessController implements ToggleSlider.Listener {
     private final Context mContext;
     private final ImageView mIcon;
     private final ToggleSlider mControl;
+    private final AdaptiveBrightnessToggleView mAdaptiveBrightnessToggle;
     private final boolean mAutomaticAvailable;
     private final IPowerManager mPower;
     private final CurrentUserTracker mUserTracker;
@@ -92,13 +96,17 @@ public class BrightnessController implements ToggleSlider.Listener {
                 if (BRIGHTNESS_MODE_URI.equals(uri)) {
                     updateMode();
                     updateSlider();
+                    updateAdaptiveBrightnessToggle();
                 } else if (BRIGHTNESS_URI.equals(uri) && !mAutomatic) {
                     updateSlider();
+                    updateAdaptiveBrightnessToggle();
                 } else if (BRIGHTNESS_ADJ_URI.equals(uri) && mAutomatic) {
                     updateSlider();
+                    updateAdaptiveBrightnessToggle();
                 } else {
                     updateMode();
                     updateSlider();
+                    updateAdaptiveBrightnessToggle();
                 }
                 for (BrightnessStateChangeCallback cb : mChangeCallbacks) {
                     cb.onBrightnessLevelChanged();
@@ -129,16 +137,21 @@ public class BrightnessController implements ToggleSlider.Listener {
 
     }
 
-    public BrightnessController(Context context, ImageView icon, ToggleSlider control) {
+    public BrightnessController(Context context,
+                                ImageView icon,
+                                ToggleSlider control,
+                                AdaptiveBrightnessToggleView abt) {
         mContext = context;
         mIcon = icon;
         mControl = control;
+        mAdaptiveBrightnessToggle = abt;
         mHandler = new Handler();
         mUserTracker = new CurrentUserTracker(mContext) {
             @Override
             public void onUserSwitched(int newUserId) {
                 updateMode();
                 updateSlider();
+                updateAdaptiveBrightnessToggle();
             }
         };
         mBrightnessObserver = new BrightnessObserver(mHandler);
@@ -173,13 +186,17 @@ public class BrightnessController implements ToggleSlider.Listener {
         mBrightnessObserver.startObserving();
         mUserTracker.startTracking();
 
-        // Update the slider and mode before attaching the listener so we don't
+        // Update the slider, mode and AdaptiveBrightnessToggle before attaching the listener so we don't
         // receive the onChanged notifications for the initial values.
         updateMode();
         updateSlider();
+        updateAdaptiveBrightnessToggle();
 
         mControl.setOnChangedListener(this);
         mListening = true;
+
+	updateAdaptiveBrightnessToggleVisibility();
+	listenToAdaptiveBrightnessToggle();
     }
 
     /** Unregister all call backs, both to and from the controller */
@@ -228,6 +245,30 @@ public class BrightnessController implements ToggleSlider.Listener {
         for (BrightnessStateChangeCallback cb : mChangeCallbacks) {
             cb.onBrightnessLevelChanged();
         }
+    }
+
+    public void updateAdaptiveBrightnessToggleVisibility() {
+	boolean adaptiveBrightnessToggleIsEnabled = Settings.System.getInt(mContext.getContentResolver(),
+                 Settings.System.SHOW_ADAPTIVE_BRIGHTNESS_TOGGLE, 1) == 1;
+
+	if (adaptiveBrightnessToggleIsEnabled) {
+	     mAdaptiveBrightnessToggle.setVisibility(View.VISIBLE);
+	} else {
+	     mAdaptiveBrightnessToggle.setVisibility(View.GONE);
+	}
+    }
+
+    public void listenToAdaptiveBrightnessToggle() {
+       mAdaptiveBrightnessToggle.setOnClickListener(new OnClickListener() {
+         @Override
+         public void onClick(View v) {
+	    Settings.System.putIntForUser(mContext.getContentResolver(),
+		Settings.System.SCREEN_BRIGHTNESS_MODE, (mAdaptiveBrightnessToggle.isChecked()) ?
+		     Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC :
+		     Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL,
+		     UserHandle.USER_CURRENT);
+		}
+	   });
     }
 
     private void setMode(int mode) {
@@ -292,4 +333,23 @@ public class BrightnessController implements ToggleSlider.Listener {
         }
     }
 
+    /** Fetch the brightness mode from the system settings and update the adaptive brightness toggle */
+    private void updateAdaptiveBrightnessToggle() {
+      boolean AutoBrightnessIsEnabled =
+      getBrightnessMode() ==
+      Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
+
+      if (mAdaptiveBrightnessToggle != null) {
+          mAdaptiveBrightnessToggle.setChecked(AutoBrightnessIsEnabled);
+      }
+
+    }
+
+    private int getBrightnessMode() {
+      return
+        Settings.System.getIntForUser(mContext.getContentResolver(),
+        Settings.System.SCREEN_BRIGHTNESS_MODE,
+        Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL,
+        UserHandle.USER_CURRENT);
+    }
 }
