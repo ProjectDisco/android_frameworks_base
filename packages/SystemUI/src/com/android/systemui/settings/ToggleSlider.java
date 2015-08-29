@@ -166,11 +166,6 @@ public class ToggleSlider extends RelativeLayout {
             if (mMirror != null) {
                 mMirror.mSlider.setPressed(true);
             }
-
-            if (mMirrorController != null) {
-                mMirrorController.showMirror();
-                mMirrorController.setLocation((View) getParent());
-            }
         }
 
         @Override
