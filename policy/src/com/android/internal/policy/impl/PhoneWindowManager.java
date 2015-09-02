@@ -6224,8 +6224,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (mForcingShowNavBar && win.getSurfaceLayer() < mForcingShowNavBarLayer) {
             tmpVisibility &= ~PolicyControl.adjustClearableFlags(win, View.SYSTEM_UI_CLEARABLE_FLAGS);
         }
-        if ((mSystemDesignFlags & SYSTEM_DESIGN_FLAG_IMMERSIVE_NAV) != 0 &&
-                !mForcingShowNavBar && win.getSurfaceLayer() >= mForcingShowNavBarLayer) {
+        if ((mSystemDesignFlags & SYSTEM_DESIGN_FLAG_IMMERSIVE_NAV) != 0 && !mForcingShowNavBar) {
             // Enforce Immersive mode on the navigation bar.
             tmpVisibility |= View.SYSTEM_UI_FLAG_IMMERSIVE |
                     View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
