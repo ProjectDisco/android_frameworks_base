@@ -23,9 +23,14 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.IPackageManager;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.content.res.ThemeConfig;
 import android.content.res.XmlResourceParser;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.media.AudioManager;
@@ -139,10 +144,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE system (" +
-                    "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "name TEXT UNIQUE ON CONFLICT REPLACE," +
-                    "value TEXT" +
-                    ");");
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "name TEXT UNIQUE ON CONFLICT REPLACE," +
+                "value TEXT" +
+                ");");
         db.execSQL("CREATE INDEX systemIndex1 ON system (name);");
 
         createSecureTable(db);
@@ -153,21 +158,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         db.execSQL("CREATE TABLE bluetooth_devices (" +
-                    "_id INTEGER PRIMARY KEY," +
-                    "name TEXT," +
-                    "addr TEXT," +
-                    "channel INTEGER," +
-                    "type INTEGER" +
-                    ");");
+                "_id INTEGER PRIMARY KEY," +
+                "name TEXT," +
+                "addr TEXT," +
+                "channel INTEGER," +
+                "type INTEGER" +
+                ");");
 
         db.execSQL("CREATE TABLE bookmarks (" +
-                    "_id INTEGER PRIMARY KEY," +
-                    "title TEXT," +
-                    "folder TEXT," +
-                    "intent TEXT," +
-                    "shortcut INTEGER," +
-                    "ordering INTEGER" +
-                    ");");
+                "_id INTEGER PRIMARY KEY," +
+                "title TEXT," +
+                "folder TEXT," +
+                "intent TEXT," +
+                "shortcut INTEGER," +
+                "ordering INTEGER" +
+                ");");
 
         db.execSQL("CREATE INDEX bookmarksIndex1 ON bookmarks (folder);");
         db.execSQL("CREATE INDEX bookmarksIndex2 ON bookmarks (shortcut);");
@@ -236,7 +241,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL("UPDATE favorites SET spanX=1, spanY=1 WHERE itemType<=0");
                 // Photo frames, clocks
                 db.execSQL(
-                    "UPDATE favorites SET spanX=2, spanY=2 WHERE itemType=1000 or itemType=1002");
+                        "UPDATE favorites SET spanX=2, spanY=2 WHERE itemType=1000 or itemType=1002");
                 // Search boxes
                 db.execSQL("UPDATE favorites SET spanX=4, spanY=1 WHERE itemType=1001");
                 db.setTransactionSuccessful();
@@ -318,7 +323,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     Settings.Secure.WIFI_WATCHDOG_PING_COUNT,
                     Settings.Secure.WIFI_WATCHDOG_PING_DELAY_MS,
                     Settings.Secure.WIFI_WATCHDOG_PING_TIMEOUT_MS,
-                };
+            };
             moveSettingsToNewTable(db, TABLE_SYSTEM, TABLE_SECURE, settingsToMove, false);
             upgradeVersion = 28;
         }
@@ -432,16 +437,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             upgradeVersion = 35;
         }
-            // due to a botched merge from donut to eclair, the initialization of ASSISTED_GPS_ENABLED
-            // was accidentally done out of order here.
-            // to fix this, ASSISTED_GPS_ENABLED is now initialized while upgrading from 38 to 39,
-            // and we intentionally do nothing from 35 to 36 now.
+        // due to a botched merge from donut to eclair, the initialization of ASSISTED_GPS_ENABLED
+        // was accidentally done out of order here.
+        // to fix this, ASSISTED_GPS_ENABLED is now initialized while upgrading from 38 to 39,
+        // and we intentionally do nothing from 35 to 36 now.
         if (upgradeVersion == 35) {
             upgradeVersion = 36;
         }
 
         if (upgradeVersion == 36) {
-           // This upgrade adds the STREAM_SYSTEM_ENFORCED type to the list of
+            // This upgrade adds the STREAM_SYSTEM_ENFORCED type to the list of
             // types affected by ringer modes (silent, vibrate, etc.)
             db.beginTransaction();
             try {
@@ -619,8 +624,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } finally {
                 db.endTransaction();
             }
-           upgradeVersion = 47;
-       }
+            upgradeVersion = 47;
+        }
 
 
         if (upgradeVersion == 47) {
@@ -635,24 +640,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } finally {
                 db.endTransaction();
             }
-           upgradeVersion = 48;
-       }
+            upgradeVersion = 48;
+        }
 
-       if (upgradeVersion == 48) {
+        if (upgradeVersion == 48) {
            /*
             * Default recognition service no longer initialized here,
             * moved to RecognitionManagerService.
             */
-           upgradeVersion = 49;
-       }
+            upgradeVersion = 49;
+        }
 
-       if (upgradeVersion == 49) {
+        if (upgradeVersion == 49) {
            /*
             * New settings for new user interface noises.
             */
-           db.beginTransaction();
-           SQLiteStatement stmt = null;
-           try {
+            db.beginTransaction();
+            SQLiteStatement stmt = null;
+            try {
                 stmt = db.compileStatement("INSERT INTO system(name,value)"
                         + " VALUES(?,?);");
                 loadUISoundEffectsSettings(stmt);
@@ -662,32 +667,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 if (stmt != null) stmt.close();
             }
 
-           upgradeVersion = 50;
-       }
+            upgradeVersion = 50;
+        }
 
-       if (upgradeVersion == 50) {
+        if (upgradeVersion == 50) {
            /*
             * Install location no longer initiated here.
             */
-           upgradeVersion = 51;
-       }
+            upgradeVersion = 51;
+        }
 
-       if (upgradeVersion == 51) {
+        if (upgradeVersion == 51) {
            /* Move the lockscreen related settings to Secure, including some private ones. */
-           String[] settingsToMove = {
-                   Secure.LOCK_PATTERN_ENABLED,
-                   Secure.LOCK_PATTERN_VISIBLE,
-                   Secure.LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED,
-                   "lockscreen.password_type",
-                   "lockscreen.lockoutattemptdeadline",
-                   "lockscreen.patterneverchosen",
-                   "lock_pattern_autolock",
-                   "lockscreen.lockedoutpermanently",
-                   "lockscreen.password_salt"
-           };
-           moveSettingsToNewTable(db, TABLE_SYSTEM, TABLE_SECURE, settingsToMove, false);
-           upgradeVersion = 52;
-       }
+            String[] settingsToMove = {
+                    Secure.LOCK_PATTERN_ENABLED,
+                    Secure.LOCK_PATTERN_VISIBLE,
+                    Secure.LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED,
+                    "lockscreen.password_type",
+                    "lockscreen.lockoutattemptdeadline",
+                    "lockscreen.patterneverchosen",
+                    "lock_pattern_autolock",
+                    "lockscreen.lockedoutpermanently",
+                    "lockscreen.password_salt"
+            };
+            moveSettingsToNewTable(db, TABLE_SYSTEM, TABLE_SECURE, settingsToMove, false);
+            upgradeVersion = 52;
+        }
 
         if (upgradeVersion == 52) {
             // new vibration/silent mode settings
@@ -745,10 +750,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 loadSetting(stmt, Global.DEFAULT_INSTALL_LOCATION,
                         PackageHelper.APP_INSTALL_AUTO);
                 db.setTransactionSuccessful();
-             } finally {
-                 db.endTransaction();
-                 if (stmt != null) stmt.close();
-             }
+            } finally {
+                db.endTransaction();
+                if (stmt != null) stmt.close();
+            }
             upgradeVersion = 56;
         }
 
@@ -859,25 +864,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (upgradeVersion == 63) {
             // This upgrade adds the STREAM_MUSIC type to the list of
-             // types affected by ringer modes (silent, vibrate, etc.)
-             db.beginTransaction();
-             try {
-                 db.execSQL("DELETE FROM system WHERE name='"
-                         + Settings.System.MODE_RINGER_STREAMS_AFFECTED + "'");
-                 int newValue = (1 << AudioManager.STREAM_RING)
-                         | (1 << AudioManager.STREAM_NOTIFICATION)
-                         | (1 << AudioManager.STREAM_SYSTEM)
-                         | (1 << AudioManager.STREAM_SYSTEM_ENFORCED)
-                         | (1 << AudioManager.STREAM_MUSIC);
-                 db.execSQL("INSERT INTO system ('name', 'value') values ('"
-                         + Settings.System.MODE_RINGER_STREAMS_AFFECTED + "', '"
-                         + String.valueOf(newValue) + "')");
-                 db.setTransactionSuccessful();
-             } finally {
-                 db.endTransaction();
-             }
-             upgradeVersion = 64;
-         }
+            // types affected by ringer modes (silent, vibrate, etc.)
+            db.beginTransaction();
+            try {
+                db.execSQL("DELETE FROM system WHERE name='"
+                        + Settings.System.MODE_RINGER_STREAMS_AFFECTED + "'");
+                int newValue = (1 << AudioManager.STREAM_RING)
+                        | (1 << AudioManager.STREAM_NOTIFICATION)
+                        | (1 << AudioManager.STREAM_SYSTEM)
+                        | (1 << AudioManager.STREAM_SYSTEM_ENFORCED)
+                        | (1 << AudioManager.STREAM_MUSIC);
+                db.execSQL("INSERT INTO system ('name', 'value') values ('"
+                        + Settings.System.MODE_RINGER_STREAMS_AFFECTED + "', '"
+                        + String.valueOf(newValue) + "')");
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+            }
+            upgradeVersion = 64;
+        }
 
         if (upgradeVersion == 64) {
             // New setting to configure the long press timeout.
@@ -927,9 +932,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.beginTransaction();
             try {
                 int ringerModeAffectedStreams = (1 << AudioManager.STREAM_RING) |
-                                                (1 << AudioManager.STREAM_NOTIFICATION) |
-                                                (1 << AudioManager.STREAM_SYSTEM) |
-                                                (1 << AudioManager.STREAM_SYSTEM_ENFORCED);
+                        (1 << AudioManager.STREAM_NOTIFICATION) |
+                        (1 << AudioManager.STREAM_SYSTEM) |
+                        (1 << AudioManager.STREAM_SYSTEM_ENFORCED);
                 if (!mContext.getResources().getBoolean(
                         com.android.internal.R.bool.config_voice_capable)) {
                     ringerModeAffectedStreams |= (1 << AudioManager.STREAM_MUSIC);
@@ -1003,7 +1008,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         if (upgradeVersion == 71) {
-             // New setting to specify whether to speak passwords in accessibility mode.
+            // New setting to specify whether to speak passwords in accessibility mode.
             db.beginTransaction();
             SQLiteStatement stmt = null;
             try {
@@ -1087,7 +1092,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.beginTransaction();
             try {
                 db.execSQL("DELETE FROM system WHERE name='"
-                                + Settings.System.VIBRATE_IN_SILENT + "'");
+                        + Settings.System.VIBRATE_IN_SILENT + "'");
                 db.setTransactionSuccessful();
             } finally {
                 db.endTransaction();
@@ -1798,7 +1803,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 SQLiteStatement stmt = null;
                 try {
                     stmt = db.compileStatement("UPDATE global SET value = ? "
-                        + " WHERE name = ? AND value = ?");
+                            + " WHERE name = ? AND value = ?");
                     stmt.bindString(1, getDefaultDeviceName()); // new default device name
                     stmt.bindString(2, Settings.Global.DEVICE_NAME);
                     stmt.bindString(3, getOldDefaultDeviceName()); // old default device name
@@ -1828,9 +1833,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             upgradeVersion = 113;
         }
 
-        // We skipped 114 to handle a merge conflict with the introduction of theater mode.
+        if (upgradeVersion < 114) {
+            // CM11 used "holo" as a system default theme. For CM12 and up its been
+            // switched to "system". So change all "holo" references in themeConfig to "system"
+            final String NAME_THEME_CONFIG = "themeConfig";
+            Cursor c = null;
+            try {
+                String[] projection = new String[]{"value"};
+                String selection = "name=?";
+                String[] selectionArgs = new String[] { NAME_THEME_CONFIG };
+                c = db.query(TABLE_SECURE, projection, selection,
+                        selectionArgs, null, null, null);
+                if (c != null && c.moveToFirst()) {
+                    String jsonConfig = c.getString(0);
+                    if (jsonConfig != null) {
+                        jsonConfig = jsonConfig.replace(
+                                "\"holo\"", '"' + ThemeConfig.SYSTEM_DEFAULT + '"');
 
-        if (upgradeVersion < 115) {
+                        // Now update the entry
+                        SQLiteStatement stmt = db.compileStatement(
+                                "UPDATE " + TABLE_SECURE + " SET value = ? "
+                                        + " WHERE name = ?");
+                        stmt.bindString(1, jsonConfig);
+                        stmt.bindString(2, NAME_THEME_CONFIG);
+                        stmt.execute();
+                    }
+                }
+            } catch(SQLiteException ex) {
+                Log.e(TAG, "Unable to update theme config value", ex);
+            } finally {
+                if (c != null) c.close();
+            }
+            upgradeVersion = 114;
+        }
+
+        if (upgradeVersion == 114) {
+            db.beginTransaction();
+            SQLiteStatement stmt = null;
+            try {
+                stmt = db.compileStatement("INSERT OR IGNORE INTO secure(name,value) VALUES(?,?);");
+                loadDefaultThemeSettings(stmt);
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+                if (stmt != null) stmt.close();
+            }
+            upgradeVersion = 115;
+        }
+
+        if (upgradeVersion == 114) {
             if (mUserHandle == UserHandle.USER_OWNER) {
                 db.beginTransaction();
                 SQLiteStatement stmt = null;
@@ -1906,6 +1957,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     qsTiles, true);
             upgradeVersion = 118;
         }
+
         // *** Remember to update DATABASE_VERSION above!
 
         if (upgradeVersion != currentVersion) {
@@ -1939,8 +1991,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void moveSettingsToNewTable(SQLiteDatabase db,
-            String sourceTable, String destTable,
-            String[] settingsToMove, boolean doIgnore) {
+                                        String sourceTable, String destTable,
+                                        String[] settingsToMove, boolean doIgnore) {
         // Copy settings values from the source table to the dest, and remove from the source
         SQLiteStatement insertStmt = null;
         SQLiteStatement deleteStmt = null;
@@ -2102,7 +2154,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             String value =
                     mContext.getResources().getBoolean(
-                    R.bool.def_screen_brightness_automatic_mode) ? "1" : "0";
+                            R.bool.def_screen_brightness_automatic_mode) ? "1" : "0";
             db.execSQL("INSERT OR REPLACE INTO system(name,value) values('" +
                     Settings.System.SCREEN_BRIGHTNESS_MODE + "','" + value + "');");
             db.setTransactionSuccessful();
@@ -2236,9 +2288,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // - ringtones, notification and system streams are affected by ringer mode
             // on voice capable devices (phones)
             int ringerModeAffectedStreams = (1 << AudioManager.STREAM_RING) |
-                                            (1 << AudioManager.STREAM_NOTIFICATION) |
-                                            (1 << AudioManager.STREAM_SYSTEM) |
-                                            (1 << AudioManager.STREAM_SYSTEM_ENFORCED);
+                    (1 << AudioManager.STREAM_NOTIFICATION) |
+                    (1 << AudioManager.STREAM_SYSTEM) |
+                    (1 << AudioManager.STREAM_SYSTEM_ENFORCED);
             if (!mContext.getResources().getBoolean(
                     com.android.internal.R.bool.config_voice_capable)) {
                 ringerModeAffectedStreams |= (1 << AudioManager.STREAM_MUSIC);
@@ -2248,9 +2300,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             loadSetting(stmt, Settings.System.MUTE_STREAMS_AFFECTED,
                     ((1 << AudioManager.STREAM_MUSIC) |
-                     (1 << AudioManager.STREAM_RING) |
-                     (1 << AudioManager.STREAM_NOTIFICATION) |
-                     (1 << AudioManager.STREAM_SYSTEM)));
+                            (1 << AudioManager.STREAM_RING) |
+                            (1 << AudioManager.STREAM_NOTIFICATION) |
+                            (1 << AudioManager.STREAM_SYSTEM)));
         } finally {
             if (stmt != null) stmt.close();
         }
@@ -2362,7 +2414,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 R.bool.def_haptic_feedback);
 
         loadIntegerSetting(stmt, Settings.System.LOCKSCREEN_SOUNDS_ENABLED,
-            R.integer.def_lockscreen_sounds_enabled);
+                R.integer.def_lockscreen_sounds_enabled);
     }
 
     private void loadDefaultAnimationSettings(SQLiteStatement stmt) {
@@ -2375,6 +2427,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private void loadDefaultHapticSettings(SQLiteStatement stmt) {
         loadBooleanSetting(stmt, Settings.System.HAPTIC_FEEDBACK_ENABLED,
                 R.bool.def_haptic_feedback);
+    }
+
+    private void loadDefaultThemeSettings(SQLiteStatement stmt) {
+        loadStringSetting(stmt, Settings.Secure.DEFAULT_THEME_PACKAGE, R.string.def_theme_package);
+        loadStringSetting(stmt, Settings.Secure.DEFAULT_THEME_COMPONENTS,
+                R.string.def_theme_components);
     }
 
     private void loadSecureSettings(SQLiteDatabase db) {
@@ -2463,7 +2521,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     R.bool.def_user_setup_complete);
 
             loadStringSetting(stmt, Settings.Secure.IMMERSIVE_MODE_CONFIRMATIONS,
-                        R.string.def_immersive_mode_confirmations);
+                    R.string.def_immersive_mode_confirmations);
 
             loadBooleanSetting(stmt, Settings.Secure.INSTALL_NON_MARKET_APPS,
                     R.bool.def_install_non_market_apps);
@@ -2479,6 +2537,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             loadIntegerSetting(stmt, Settings.Secure.SLEEP_TIMEOUT,
                     R.integer.def_sleep_timeout);
+
+            loadDefaultThemeSettings(stmt);
         } finally {
             if (stmt != null) stmt.close();
         }
@@ -2522,8 +2582,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             loadSetting(stmt, Settings.Global.STAY_ON_WHILE_PLUGGED_IN,
                     ("1".equals(SystemProperties.get("ro.kernel.qemu")) ||
-                        mContext.getResources().getBoolean(R.bool.def_stay_on_while_plugged_in))
-                     ? 1 : 0);
+                            mContext.getResources().getBoolean(R.bool.def_stay_on_while_plugged_in))
+                            ? 1 : 0);
 
             loadIntegerSetting(stmt, Settings.Global.WIFI_SLEEP_POLICY,
                     R.integer.def_wifi_sleep_policy);
@@ -2637,7 +2697,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // Set the preferred cdma subscription source to target desired value or default
             // value defined in CdmaSubscriptionSourceManager
             type = SystemProperties.getInt("ro.telephony.default_cdma_sub",
-                        CdmaSubscriptionSourceManager.PREFERRED_CDMA_SUBSCRIPTION);
+                    CdmaSubscriptionSourceManager.PREFERRED_CDMA_SUBSCRIPTION);
             loadSetting(stmt, Settings.Global.CDMA_SUBSCRIPTION_MODE, type);
 
             loadIntegerSetting(stmt, Settings.Global.LOW_BATTERY_SOUND_TIMEOUT,
@@ -2690,13 +2750,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private int getIntValueFromTable(SQLiteDatabase db, String table, String name,
-            int defaultValue) {
+                                     int defaultValue) {
         String value = getStringValueFromTable(db, table, name, null);
         return (value != null) ? Integer.parseInt(value) : defaultValue;
     }
 
     private String getStringValueFromTable(SQLiteDatabase db, String table, String name,
-            String defaultValue) {
+                                           String defaultValue) {
         Cursor c = null;
         try {
             c = db.query(table, new String[] { Settings.System.VALUE }, "name='" + name + "'",

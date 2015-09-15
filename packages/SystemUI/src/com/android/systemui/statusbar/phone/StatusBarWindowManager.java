@@ -64,7 +64,6 @@ public class StatusBarWindowManager {
      * @param barHeight The height of the status bar in collapsed state.
      */
     public void add(View statusBarView, int barHeight) {
-
         // Now that the status bar window encompasses the sliding panel and its
         // translucent backdrop, the entire thing is made TRANSLUCENT and is
         // hardware-accelerated.
@@ -92,8 +91,8 @@ public class StatusBarWindowManager {
 
     private void applyKeyguardFlags(State state) {
         if (state.keyguardShowing) {
-            mLpChanged.flags |= WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
             mLpChanged.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_KEYGUARD;
+            mLpChanged.flags |= WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
         } else {
             mLpChanged.flags &= ~WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
             mLpChanged.privateFlags &= ~WindowManager.LayoutParams.PRIVATE_FLAG_KEYGUARD;

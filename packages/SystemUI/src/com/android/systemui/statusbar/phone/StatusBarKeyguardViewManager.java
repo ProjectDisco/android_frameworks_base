@@ -87,6 +87,7 @@ public class StatusBarKeyguardViewManager {
         mContainer = container;
         mStatusBarWindowManager = statusBarWindowManager;
         mScrimController = scrimController;
+        if (mBouncer != null) mBouncer.removeView();
         mBouncer = new KeyguardBouncer(mContext, mViewMediatorCallback, mLockPatternUtils,
                 mStatusBarWindowManager, container);
     }
@@ -438,5 +439,9 @@ public class StatusBarKeyguardViewManager {
 
     public boolean isInputRestricted() {
         return mViewMediatorCallback.isInputRestricted();
+    }
+
+    public boolean isKeyguardShowingMedia() {
+        return mPhoneStatusBar.isKeyguardShowingMedia();
     }
 }

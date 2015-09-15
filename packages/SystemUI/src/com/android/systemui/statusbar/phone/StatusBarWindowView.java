@@ -89,12 +89,6 @@ public class StatusBarWindowView extends FrameLayout {
     protected void onAttachedToWindow () {
         super.onAttachedToWindow();
 
-        mStackScrollLayout = (NotificationStackScrollLayout) findViewById(
-                R.id.notification_stack_scroller);
-        mNotificationPanel = (NotificationPanelView) findViewById(R.id.notification_panel);
-        mDragDownHelper = new DragDownHelper(getContext(), this, mStackScrollLayout, mService);
-        mBrightnessMirror = findViewById(R.id.brightness_mirror);
-
         // We really need to be able to animate while window animations are going on
         // so that activities may be started asynchronously from panel animations
         final ViewRootImpl root = getViewRootImpl();
@@ -241,6 +235,20 @@ public class StatusBarWindowView extends FrameLayout {
         if (mStackScrollLayout != null) {
             mStackScrollLayout.cancelExpandHelper();
         }
+    }
+
+    public void addContent(View content) {
+        addView(content);
+        mStackScrollLayout = (NotificationStackScrollLayout) content.findViewById(
+                R.id.notification_stack_scroller);
+        mNotificationPanel = (NotificationPanelView) content.findViewById(R.id.notification_panel);
+        mDragDownHelper = new DragDownHelper(getContext(), this, mStackScrollLayout, mService);
+        mBrightnessMirror = content.findViewById(R.id.brightness_mirror);
+
+    }
+
+    public void removeContent(View content) {
+        removeView(content);
     }
 }
 

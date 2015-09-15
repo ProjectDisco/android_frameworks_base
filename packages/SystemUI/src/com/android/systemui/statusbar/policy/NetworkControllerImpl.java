@@ -327,6 +327,10 @@ public class NetworkControllerImpl extends BroadcastReceiver
         }
     }
 
+    public void removeAllSignalClusters() {
+        mSignalClusters.clear();
+    }
+
     public void addNetworkSignalChangedCallback(NetworkSignalChangedCallback cb) {
         mSignalsChangedCallbacks.add(cb);
         cb.onAirplaneModeChanged(mAirplaneMode);
