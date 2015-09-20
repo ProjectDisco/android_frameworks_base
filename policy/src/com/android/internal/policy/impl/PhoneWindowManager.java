@@ -1606,7 +1606,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR_DEFAULT,
                     UserHandle.USER_CURRENT);
             mPieState = (Settings.System.getIntForUser(resolver,
-                    Settings.System.PIE_STATE, 1, UserHandle.USER_CURRENT) == 1);
+                    Settings.System.PIE_STATE, 0, UserHandle.USER_CURRENT) == 1);
 
             // Configure wake gesture.
             boolean wakeGestureEnabledSetting = Settings.Secure.getIntForUser(resolver,
