@@ -2716,12 +2716,6 @@ public final class Settings {
         public static final String STATUSBAR_BATTERY_PERCENT = "statusbar_battery_percent";
 
         /**
-         *  Enable navigation bar double tap gesture on to put device to sleep
-         * @hide
-         */
-        public static final String DOUBLE_TAP_SLEEP_NAVBAR = "double_tap_sleep_navbar";
-
-        /**
          * Whether to show the IME arrows in the status bar
          * @hide
          */
