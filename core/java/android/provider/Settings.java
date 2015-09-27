@@ -2721,17 +2721,15 @@ public final class Settings {
          */
         public static final String STATUS_BAR_IME_ARROWS = "status_bar_ime_arrows";
 
-        /**
-         * Toast icon
-         *
-         * @hide
-         */
+       /**
+        * Toast icon
+        *
+        * @hide
+        */
         public static final String TOAST_ICON = "toast_icon";
 
-        /**
-
        /**
-        * PA Pie control panel. Meet him on the spot.
+        * PA Pie control panel
         * 0 = off
         * 1 = on
         * Changes aspect depends on status bar visibility.
@@ -2740,7 +2738,7 @@ public final class Settings {
         public static final String PIE_STATE = "pie_state";
 
         /**
-         * Locations of the Pa Pie in the screen.
+         * Locations of the PA Pie in the screen.
          * (1<<0) = BOTTOM
          * (1<<1) = LEFT
          * (1<<2) = RIGHT
