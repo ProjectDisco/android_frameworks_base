@@ -29,6 +29,7 @@ public class MetricsLogger implements MetricsConstants {
     // Temporary constants go here, to await migration to MetricsConstants.
     // next value is 239;
     public static final int ACTION_ASSIST_LONG_PRESS = 239;
+    public static final int DISCO = 1337;
 
     public static void visible(Context context, int category) throws IllegalArgumentException {
         if (Build.IS_DEBUGGABLE && category == VIEW_UNKNOWN) {
