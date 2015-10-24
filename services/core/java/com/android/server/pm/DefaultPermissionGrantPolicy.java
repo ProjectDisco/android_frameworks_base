@@ -614,6 +614,13 @@ final class DefaultPermissionGrantPolicy {
                 grantRuntimePermissionsLPw(gmscorePackage, STORAGE_PERMISSIONS, userId);
             }
 
+            // Google+ App
+            PackageParser.Package googlePlusPackage = getDefaultProviderAuthorityPackageLPr(
+                    "com.google.android.apps.plus", userId); 
+            if (googlePlusPackage != null) {
+                grantRuntimePermissionsLPw(googlePlusPackage, STORAGE_PERMISSIONS, userId);
+            }
+
             mService.mSettings.onDefaultRuntimePermissionsGrantedLPr(userId);
         }
     }
