@@ -334,8 +334,10 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         }
         mEmergencyCallsOnly.setVisibility(mExpanded && mShowEmergencyCallsOnly ? VISIBLE : GONE);
         mBatteryLevel.setVisibility(mExpanded ? View.VISIBLE : View.GONE);
-        mSettingsContainer.findViewById(R.id.tuner_icon).setVisibility(
-                TunerService.isTunerEnabled(mContext) ? View.VISIBLE : View.INVISIBLE);
+        mSettingsContainer.findViewById(R.id.tuner_icon).setVisibility(View.GONE);
+
+        // Enable system UI tuner by default
+        TunerService.setTunerEnabled(mContext, true);
     }
 
     private void updateSignalClusterDetachment() {
@@ -501,20 +503,6 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
     @Override
     public void onClick(View v) {
         if (v == mSettingsButton) {
-            if (mSettingsButton.isTunerClick()) {
-                if (TunerService.isTunerEnabled(mContext)) {
-                    TunerService.showResetRequest(mContext, new Runnable() {
-                        @Override
-                        public void run() {
-                            // Relaunch settings so that the tuner disappears.
-                            startSettingsActivity();
-                        }
-                    });
-                } else {
-                    Toast.makeText(getContext(), R.string.tuner_toast, Toast.LENGTH_LONG).show();
-                    TunerService.setTunerEnabled(mContext, true);
-                }
-            }
             startSettingsActivity();
         } else if (v == mSystemIconsSuperContainer) {
             startBatteryActivity();
